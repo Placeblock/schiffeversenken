@@ -1,5 +1,7 @@
 package data
 
+import "math"
+
 type Vector struct {
 	X int
 	Y int
@@ -11,6 +13,10 @@ func (v *Vector) Add(u Vector) Vector {
 
 func (v *Vector) Multiply(scalar int) Vector {
 	return Vector{int(v.X) * scalar, int(v.Y) * scalar}
+}
+
+func (v *Vector) Length() uint {
+	return uint(math.Sqrt(float64(v.X*v.X + v.Y*v.Y)))
 }
 
 type Ship struct {
@@ -36,14 +42,16 @@ type Field struct {
 // Initializes a new Ship and calculates all occupied fields
 func NewShip(position Vector, direction Vector, length uint8) Ship {
 	ship := Ship{Position: position, Direction: direction, Length: length, Sunk: false}
-
-	occupiedCells := make([]Vector, 0)
-	for i := uint8(0); i < length; i++ {
-		occupiedCells = append(occupiedCells, position.Add(direction.Multiply(int(i))))
-	}
-	ship.OccupiedCells = occupiedCells
-
+	ship.CalculateOccupiedCells()
 	return ship
+}
+
+func (s *Ship) CalculateOccupiedCells() {
+	occupiedCells := make([]Vector, 0)
+	for i := uint8(0); i < s.Length; i++ {
+		occupiedCells = append(occupiedCells, s.Position.Add(s.Direction.Multiply(int(i))))
+	}
+	s.OccupiedCells = occupiedCells
 }
 
 // Initializes a new Field and creates the associated cells
@@ -82,6 +90,20 @@ func (f *Field) AddShip(ship *Ship) {
 
 // Checks if a new ship can added at a specific location.
 func (f *Field) CanAddShip(ship *Ship) bool {
+	if ship.Length < 2 || ship.Length > 5 || ship.Direction.Length() != 1 || ship.Sunk {
+		return false
+	}
+	// Only 6-length ships of this type are allowed
+	maxShips := 6 - ship.Length
+	ships := uint8(0)
+	for _, existingShip := range f.Ships {
+		if existingShip.Length == ship.Length {
+			ships++
+		}
+	}
+	if ships >= maxShips {
+		return false
+	}
 	for _, occupiedCell := range ship.OccupiedCells {
 		cell, exists := f.Cells[occupiedCell]
 		if !exists {
@@ -132,7 +154,7 @@ func (f *Field) Shoot(position Vector) (hit, sunk bool) {
 	return true, true
 }
 
-func (f *Field) isDefeated() bool {
+func (f *Field) IsDefeated() bool {
 	for _, ship := range f.Ships {
 		if !ship.Sunk {
 			return false

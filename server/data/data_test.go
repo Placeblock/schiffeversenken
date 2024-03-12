@@ -142,7 +142,7 @@ func TestDefeat(t *testing.T) {
 	ship := NewShip(Vector{0, 0}, Vector{0, 1}, 1)
 	field.AddShip(&ship)
 	field.Shoot(Vector{0, 0})
-	if !field.isDefeated() {
+	if !field.IsDefeated() {
 		t.Fatal("Is incorrectly undefeated")
 	}
 }

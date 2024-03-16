@@ -1,6 +1,9 @@
 package data
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type Vector struct {
 	X int
@@ -64,6 +67,28 @@ func NewField(size Vector) Field {
 		}
 	}
 	return field
+}
+
+func (f *Field) Print() {
+	for y := 0; y < f.Size.Y; y++ {
+		for x := 0; x < f.Size.X; x++ {
+			cell := f.Cells[Vector{X: x, Y: y}]
+			if cell.Ship != nil {
+				if cell.Shot {
+					fmt.Print("H")
+				} else {
+					fmt.Print("S")
+				}
+			} else {
+				if cell.Shot {
+					fmt.Print("X")
+				} else {
+					fmt.Print("O")
+				}
+			}
+		}
+		fmt.Println()
+	}
 }
 
 // Adds a ship to the field and marks cells as not accepting new ships

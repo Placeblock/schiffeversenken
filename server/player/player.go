@@ -16,8 +16,9 @@ type OutMessage struct {
 }
 
 type InMessage struct {
-	Player *Player
-	OutMessage
+	Player Player
+	Action string
+	Data   interface{}
 }
 
 type ShootData struct {

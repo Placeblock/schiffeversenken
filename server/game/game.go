@@ -20,8 +20,8 @@ type Game struct {
 }
 
 type GameMessageData struct {
-	Player1 string
-	Player2 string
+	Player1 string `json:"player1"`
+	Player2 string `json:"player2"`
 }
 
 func NewGame(player1 player.Player, player2 player.Player, channel chan player.InMessage) Game {
@@ -39,9 +39,9 @@ func (g *Game) End() {
 func (g *Game) RemovePlayer(removedPlayer player.Player) {
 	g.broadcast("REMOVE_PLAYER", removedPlayer.GetName())
 	if removedPlayer == g.Player1 {
-		g.Win(g.Player2)
+		g.win(g.Player2)
 	} else {
-		g.Win(g.Player1)
+		g.win(g.Player1)
 	}
 }
 
@@ -52,17 +52,13 @@ func (g *Game) getOtherPlayer() player.Player {
 	return g.Player1
 }
 
-func (g *Game) Win(player player.Player) {
+func (g *Game) win(player player.Player) {
 	g.broadcast("WIN", player.GetName())
 	g.State = ENDED
 }
 
 func (g *Game) nextPlayer() {
 	g.CurrentPlayer = g.getOtherPlayer()
-	if g.CurrentPlayer.GetField().IsDefeated() {
-		g.Win(g.getOtherPlayer())
-		return
-	}
 	g.broadcast("CURRENT_PLAYER", g.CurrentPlayer.GetName())
 }
 
@@ -81,8 +77,10 @@ func (g *Game) PlaceShip(pl player.Player, ship data.Ship) {
 		return
 	}
 	pl.GetField().AddShip(&ship)
-	pl.GetField().Print()
-	pl.GetChan() <- player.OutMessage{Action: "SHIP_PLACED", Data: nil}
+	pl.GetChan() <- player.OutMessage{Action: "SHIP_PLACED", Data: ship}
+	if g.CurrentPlayer.GetField().FinishedPlacing() && g.getOtherPlayer().GetField().FinishedPlacing() {
+		g.Start()
+	}
 }
 
 func (g *Game) Start() {
@@ -123,11 +121,11 @@ func (g *Game) Shoot(pl player.Player, cell data.Vector) {
 			g.broadcast("SUNK", SunkResponse{Player: target.GetName(), Ship: *ship})
 
 			if target.GetField().IsDefeated() {
-				g.broadcast("DEFEAT", target.GetName())
+				g.broadcast("WIN", pl.GetName())
 			}
 		}
 	} else {
-		pl.GetChan() <- player.OutMessage{Action: "NO_HIT", Data: nil}
+		pl.GetChan() <- player.OutMessage{Action: "NO_HIT", Data: pl.GetName()}
 	}
 	g.nextPlayer()
 }

@@ -6,8 +6,8 @@ import (
 )
 
 type Vector struct {
-	X int
-	Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 func (v *Vector) Add(u Vector) Vector {
@@ -23,11 +23,11 @@ func (v *Vector) Length() uint {
 }
 
 type Ship struct {
-	Position      Vector
-	Direction     Vector
-	OccupiedCells []Vector
-	Length        uint8
-	Sunk          bool
+	Position      Vector   `json:"position"`
+	Direction     Vector   `json:"direction"`
+	OccupiedCells []Vector `json:"-"`
+	Length        uint8    `json:"length"`
+	Sunk          bool     `json:"-"`
 }
 
 type Cell struct {
@@ -36,10 +36,26 @@ type Cell struct {
 	Shot         bool
 }
 
+type FieldSettings struct {
+	Ships map[uint8]uint8
+}
+
+func GetDefaultFieldSettings() FieldSettings {
+	settings := FieldSettings{
+		Ships: make(map[uint8]uint8),
+	}
+	settings.Ships[5] = 1
+	//settings.Ships[4] = 2
+	//settings.Ships[3] = 3
+	//settings.Ships[2] = 4
+	return settings
+}
+
 type Field struct {
-	Size  Vector
-	Ships []*Ship
-	Cells map[Vector]*Cell
+	Size     Vector
+	Ships    []*Ship
+	Cells    map[Vector]*Cell
+	Settings FieldSettings
 }
 
 // Initializes a new Ship and calculates all occupied fields
@@ -113,13 +129,34 @@ func (f *Field) AddShip(ship *Ship) {
 	f.Ships = append(f.Ships, ship)
 }
 
+func (f *Field) FinishedPlacing() bool {
+	ships := make(map[uint8]uint8)
+	for _, ship := range f.Ships {
+		_, exists := ships[ship.Length]
+		if !exists {
+			ships[ship.Length] = 1
+		} else {
+			ships[ship.Length]++
+		}
+	}
+	for length, amount := range f.Settings.Ships {
+		placed, exists := ships[length]
+		if !exists {
+			return false
+		}
+		if placed < amount {
+			return false
+		}
+	}
+	return true
+}
+
 // Checks if a new ship can added at a specific location.
 func (f *Field) CanAddShip(ship *Ship) bool {
-	if ship.Length < 2 || ship.Length > 5 || ship.Direction.Length() != 1 || ship.Sunk {
+	maxShips, exists := f.Settings.Ships[ship.Length]
+	if !exists || ship.Direction.Length() != 1 || ship.Sunk {
 		return false
 	}
-	// Only 6-length ships of this type are allowed
-	maxShips := 6 - ship.Length
 	ships := uint8(0)
 	for _, existingShip := range f.Ships {
 		if existingShip.Length == ship.Length {

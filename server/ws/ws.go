@@ -2,6 +2,7 @@ package ws
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"schiffeversenken/match"
@@ -26,7 +27,9 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	p := NewWebsocketPlayer()
+	go Listen(&p, con)
 	defer con.Close()
+	defer close(p.GetChan())
 	for {
 		_, data, err := con.ReadMessage()
 		if err != nil {
@@ -36,45 +39,39 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		var message WebsocketMessage
 		err = json.Unmarshal(data, &message)
 		if err != nil {
+			fmt.Println(err)
+			p.Channel <- player.OutMessage{Action: "INVALID_MESSAGE"}
 			continue
 		}
-		if message.Action == "NAME" {
+		switch message.Action {
+		case "NAME":
 			var name string
 			err = json.Unmarshal(*message.Data, &name)
-
 			if err != nil {
 				continue
 			}
-
-			if match.NameExists(p.Name) {
-				p.Channel <- player.OutMessage{Action: "NAME", Data: "ALREADY_EXISTS"}
-				continue
-			}
-			p.Name = name
-			match.AddToPool(&p)
-			continue
-		}
-		if message.Action == "PLAY" {
+			match.CheckName(&p, name)
+		case "PLAY":
 			var opponentName string
 			err = json.Unmarshal(*message.Data, &opponentName)
-
 			if err != nil {
 				continue
 			}
-
-			opponent := match.GetPlayer(opponentName)
-			if opponent == nil {
-				p.Channel <- player.OutMessage{Action: "PLAY", Data: "INVALID_PLAYER"}
+			match.CheckOpponent(&p, opponentName)
+		default:
+			gameMessage := player.GetGameMessage(message.Action, *message.Data)
+			if gameMessage == nil {
 				continue
 			}
-			match.CreateGame(&p, opponent)
-			continue
+			channel := match.GetGameChannel(&p)
+			channel <- player.InMessage{Player: &p, Data: gameMessage}
 		}
-		channel := match.GetGameChannel(&p)
-		if channel == nil {
-			continue
-		}
-		channel <- message
+	}
+}
+
+func Listen(p *WebsocketPlayer, con *websocket.Conn) {
+	for message := range p.Channel {
+		con.WriteJSON(message)
 	}
 }
 

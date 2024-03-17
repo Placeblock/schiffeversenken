@@ -6,8 +6,6 @@ import (
 )
 
 type Player interface {
-	GetName() string
-	SetName(string)
 	GetChan() chan OutMessage
 	GetField() *data.Field
 	CreateField()

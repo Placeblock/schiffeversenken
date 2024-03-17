@@ -30,6 +30,8 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	go Listen(&p, con)
 	defer con.Close()
 	defer close(p.GetChan())
+
+	match.AddToPool(&p)
 	for {
 		_, data, err := con.ReadMessage()
 		if err != nil {
@@ -44,20 +46,13 @@ func handle(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		switch message.Action {
-		case "NAME":
-			var name string
-			err = json.Unmarshal(*message.Data, &name)
+		case "JOIN":
+			var id string
+			err = json.Unmarshal(*message.Data, &id)
 			if err != nil {
 				continue
 			}
-			match.CheckName(&p, name)
-		case "PLAY":
-			var opponentName string
-			err = json.Unmarshal(*message.Data, &opponentName)
-			if err != nil {
-				continue
-			}
-			match.CheckOpponent(&p, opponentName)
+			match.Join(&p, id)
 		default:
 			gameMessage := player.GetGameMessage(message.Action, *message.Data)
 			if gameMessage == nil {

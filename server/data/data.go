@@ -37,7 +37,7 @@ type Cell struct {
 }
 
 type FieldSettings struct {
-	Ships map[uint8]uint8
+	Ships map[uint8]uint8 `json:"ships"`
 }
 
 func GetDefaultFieldSettings() FieldSettings {
@@ -52,10 +52,10 @@ func GetDefaultFieldSettings() FieldSettings {
 }
 
 type Field struct {
-	Size     Vector
-	Ships    []*Ship
-	Cells    map[Vector]*Cell
-	Settings FieldSettings
+	Size     Vector           `json:"size"`
+	Ships    []*Ship          `json:"-"`
+	Cells    map[Vector]*Cell `json:"-"`
+	Settings FieldSettings    `json:"settings"`
 }
 
 // Initializes a new Ship and calculates all occupied fields

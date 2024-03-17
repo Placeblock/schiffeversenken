@@ -19,47 +19,43 @@ type Game struct {
 	CurrentPlayer player.Player
 }
 
-type GameMessageData struct {
-	Player1 string `json:"player1"`
-	Player2 string `json:"player2"`
-}
-
 func NewGame(player1 player.Player, player2 player.Player, channel chan player.InMessage) Game {
 	player1.CreateField()
 	player2.CreateField()
 	game := Game{State: BUILDING, Player1: player1, Player2: player2, CurrentPlayer: player1, Channel: channel}
-	game.broadcast("GAME", GameMessageData{Player1: player1.GetName(), Player2: player2.GetName()})
+	game.broadcast("STATE", "building")
 	return game
 }
 
 func (g *Game) End() {
+	g.State = ENDED
+	g.broadcast("STATE", "ended")
 	close(g.Channel) // Stop listening for messages
 }
 
 func (g *Game) RemovePlayer(removedPlayer player.Player) {
-	g.broadcast("REMOVE_PLAYER", removedPlayer.GetName())
-	if removedPlayer == g.Player1 {
-		g.win(g.Player2)
-	} else {
-		g.win(g.Player1)
-	}
+	opponent := g.getOtherPlayer(removedPlayer)
+	opponent.GetChan() <- player.OutMessage{Action: "OPPONENT_LEFT"}
+	g.win(opponent)
 }
 
-func (g *Game) getOtherPlayer() player.Player {
-	if g.Player1 == g.CurrentPlayer {
+func (g *Game) getOtherPlayer(p player.Player) player.Player {
+	if g.Player1 == p {
 		return g.Player2
 	}
 	return g.Player1
 }
 
-func (g *Game) win(player player.Player) {
-	g.broadcast("WIN", player.GetName())
-	g.State = ENDED
+func (g *Game) win(p player.Player) {
+	p.GetChan() <- player.OutMessage{Action: "WON"}
+	g.getOtherPlayer(p).GetChan() <- player.OutMessage{Action: "LOST"}
+	g.End()
 }
 
 func (g *Game) nextPlayer() {
-	g.CurrentPlayer = g.getOtherPlayer()
-	g.broadcast("CURRENT_PLAYER", g.CurrentPlayer.GetName())
+	g.CurrentPlayer = g.getOtherPlayer(g.CurrentPlayer)
+	g.CurrentPlayer.GetChan() <- player.OutMessage{Action: "TURN_START"}
+	g.getOtherPlayer(g.CurrentPlayer).GetChan() <- player.OutMessage{Action: "TURN_END"}
 }
 
 func (g *Game) broadcast(action string, data interface{}) {
@@ -78,14 +74,14 @@ func (g *Game) PlaceShip(pl player.Player, ship data.Ship) {
 	}
 	pl.GetField().AddShip(&ship)
 	pl.GetChan() <- player.OutMessage{Action: "SHIP_PLACED", Data: ship}
-	if g.CurrentPlayer.GetField().FinishedPlacing() && g.getOtherPlayer().GetField().FinishedPlacing() {
+	if g.CurrentPlayer.GetField().FinishedPlacing() && g.getOtherPlayer(g.CurrentPlayer).GetField().FinishedPlacing() {
 		g.Start()
 	}
 }
 
 func (g *Game) Start() {
 	g.State = PLAYING
-	g.broadcast("START", nil)
+	g.broadcast("STATE", "playing")
 }
 
 type HitResponse struct {
@@ -107,25 +103,27 @@ func (g *Game) Shoot(pl player.Player, cell data.Vector) {
 		pl.GetChan() <- player.OutMessage{Action: "INVALID_TURN", Data: nil}
 		return
 	}
-	target := g.getOtherPlayer()
+	target := g.getOtherPlayer(pl)
 	if !target.GetField().CanShoot(cell) {
 		pl.GetChan() <- player.OutMessage{Action: "INVALID_SHOT", Data: nil}
 		return
 	}
 	hit, sunk := target.GetField().Shoot(cell)
 	if hit {
-		g.broadcast("HIT", HitResponse{Player: target.GetName(), Cell: cell})
+		pl.GetChan() <- player.OutMessage{Action: "HIT_OTHER", Data: cell}
+		target.GetChan() <- player.OutMessage{Action: "HIT_SELF", Data: cell}
 
 		if sunk {
 			ship := target.GetField().Cells[cell].Ship
-			g.broadcast("SUNK", SunkResponse{Player: target.GetName(), Ship: *ship})
+			pl.GetChan() <- player.OutMessage{Action: "SUNK_OTHER", Data: *ship}
+			target.GetChan() <- player.OutMessage{Action: "SUNK_SELF", Data: *ship}
 
 			if target.GetField().IsDefeated() {
-				g.broadcast("WIN", pl.GetName())
+				g.win(pl)
 			}
 		}
 	} else {
-		pl.GetChan() <- player.OutMessage{Action: "NO_HIT", Data: pl.GetName()}
+		pl.GetChan() <- player.OutMessage{Action: "NO_HIT", Data: cell}
 	}
 	g.nextPlayer()
 }

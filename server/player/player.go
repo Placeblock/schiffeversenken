@@ -8,6 +8,7 @@ type Player interface {
 	GetName() string
 	GetChan() chan OutMessage
 	GetField() *data.Field
+	CreateField()
 }
 
 type OutMessage struct {
@@ -17,8 +18,7 @@ type OutMessage struct {
 
 type InMessage struct {
 	Player Player
-	Action string
-	Data   interface{}
+	Data   interface{} `json:"data"`
 }
 
 type ShootData struct {

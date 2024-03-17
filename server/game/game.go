@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"schiffeversenken/data"
 	"schiffeversenken/player"
 )
@@ -20,8 +19,16 @@ type Game struct {
 	CurrentPlayer player.Player
 }
 
+type GameMessageData struct {
+	Player1 string
+	Player2 string
+}
+
 func NewGame(player1 player.Player, player2 player.Player, channel chan player.InMessage) Game {
+	player1.CreateField()
+	player2.CreateField()
 	game := Game{State: BUILDING, Player1: player1, Player2: player2, CurrentPlayer: player1, Channel: channel}
+	game.broadcast("GAME", GameMessageData{Player1: player1.GetName(), Player2: player2.GetName()})
 	return game
 }
 
@@ -127,18 +134,12 @@ func (g *Game) Shoot(pl player.Player, cell data.Vector) {
 
 func (g *Game) Listen() {
 	for message := range g.Channel {
-		switch action := message.Action; action {
-		case "SHOOT":
-			shootData := message.Data.(player.ShootData)
-			g.Shoot(message.Player, shootData.Cell)
-		case "ADD_SHIP":
-			shipData := message.Data.(player.ShipData)
-			ship := data.NewShip(shipData.Position, shipData.Direction, shipData.Length)
+		switch payload := message.Data.(type) {
+		case player.ShootData:
+			g.Shoot(message.Player, payload.Cell)
+		case player.ShipData:
+			ship := data.NewShip(payload.Position, payload.Direction, payload.Length)
 			g.PlaceShip(message.Player, ship)
-		case "START":
-			g.Start()
-		default:
-			fmt.Println("Invalid Message: ", action, message)
 		}
 	}
 }

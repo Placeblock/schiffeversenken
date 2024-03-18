@@ -1,32 +1,16 @@
+import { Field, Ship } from "./field.js";
 
+const fieldElement = document.getElementById("field");
+const shipElement = document.getElementById("ship");
+const shipElement2 = document.getElementById("ship2");
 
-const field = document.getElementById("field");
-const ship = document.getElementById("ship");
-
-for (let y = 0; y < 10; y++) {
-    const row = document.createElement("tr")  
-    for (let x = 0; x < 10; x++) {
-        const cell = document.createElement("td")
-        cell.classList.add("cell")
-        cell.ondragover = onDragOver;
-        cell.ondrop = onDrop;
-        cell.id = getCellID(x, y)
-        cell.setAttribute("cell-x", x)
-        cell.setAttribute("cell-y", y)
-        row.appendChild(cell)
-    }
-    field.appendChild(row)
-}
-
-function getCellID(x, y) {
-    return "cell-"+x+"-"+y
-}
-
-function getCell(x, y) {
-    return document.getElementById(getCellID(x, y))
-}
-
-ship.ondragstart = onDragStart;
+const field = new Field(fieldElement, {x: 10, y: 10})
+const ship = new Ship(shipElement, {x: 2, y: 2}, {x: 1, y: 0}, 3)
+const ship2 = new Ship(shipElement2, {x: 5, y: 5}, {x: 0, y: 1}, 4)
+field.addShip(ship)
+field.addShip(ship2)
+/*
+shipElement.ondragstart = onDragStart;
 function onDragStart(ev) {
     const dx = Math.floor(ev.layerX / 40);
     const dy = Math.floor(ev.layerY / 40);
@@ -34,11 +18,13 @@ function onDragStart(ev) {
     ev.dataTransfer.setData("drag-delta-y", dy)
     ev.dataTransfer.dropEffect = "move";
     ev.dataTransfer.setData("text/plain", ev.target.id);
+    requestAnimationFrame(() => {
+        ev.target.style.display = "none"
+    })
 }
-
-function onDragOver(ev) {
-    ev.preventDefault();
-    ev.dataTransfer.dropEffect = "move";
+shipElement.ondragend = onDragEnd;
+function onDragEnd(ev) {
+    ev.target.style.display = "block"
 }
 
 function onDrop(ev) {
@@ -51,5 +37,6 @@ function onDrop(ev) {
     const targetY = y-dy;
     const targetElement = getCell(targetX, targetY);
     const data = ev.dataTransfer.getData("text/plain");
-    targetElement.appendChild(document.getElementById(data));
-}
+    const src = document.getElementById(data);
+    targetElement.appendChild(src);
+}*/

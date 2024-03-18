@@ -1,7 +1,7 @@
 .cell {
     position: relative;
-    width: 39px;
-    height: 39px;
+    width: 30px;
+    height: 30px;
     border: 1px solid black;
 }
 
@@ -12,15 +12,27 @@ th, td {
 #field {
     gap: 0px;
     border-spacing: 0px;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
-#ship {
+.ship {
     position: absolute;
     top: -2px;
     left: -2px;
-    width: 120px;
-    height: 40px;
     border: 2px solid green;
     background-color: aqua;
     z-index: 1;
+}
+
+.ship:hover {
+    cursor: pointer;
+}
+
+.ship-blocked {
+    background-color: rgb(255, 170, 170);
 }

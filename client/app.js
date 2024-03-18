@@ -1,11 +1,34 @@
 import { Field, Ship } from "./field.js";
 
 const fieldElement = document.getElementById("field");
-const shipElement = document.getElementById("ship");
-const shipElement2 = document.getElementById("ship2");
 
-const field = new Field(fieldElement, {x: 10, y: 10})
-const ship = new Ship(shipElement, {x: 2, y: 2}, {x: 1, y: 0}, 3)
-const ship2 = new Ship(shipElement2, {x: 5, y: 5}, {x: 0, y: 1}, 4)
-field.addShip(ship)
-field.addShip(ship2)
+createField({x: 10, y: 10}, {
+    "5": 1,
+    "4": 2,
+    "3": 3,
+    "2": 4
+})
+
+function createField(size, settings) {
+    const field = new Field(fieldElement, {x: 10, y: 10})
+    let y = 0;
+    let x = 0;
+    let n = 0
+    for (let key in settings) {
+        const length = Number(key)
+        const amount = settings[key]
+        for (let i = 0; i < amount; i++) {
+            if (x+length >= size.x) {
+                y +=2;
+                x = 0;
+            }
+            const shipElement = document.createElement("div")
+            shipElement.classList.add("ship")
+            shipElement.id = "ship-"+n
+            const ship = new Ship(shipElement, {x: x, y: y}, {x: 1, y: 0}, length)
+            field.addShip(ship)
+            x+=length+1
+            n++;
+        }
+    }
+}

@@ -56,13 +56,33 @@ export class Field {
         this.updateShips()
     }
 
-    addShip(ship) {
+    addShip(ship, draggable=true) {
         this.ships.push(ship)
         this.updateShips()
+        if (draggable) {
+            this.addDragHandlers(ship)
+            ship.element.draggable = true;
+        }
+        this.getCell(ship.position.x, ship.position.y).element.appendChild(ship.element)
+    }
+
+    disableOccupied() {
+        this.element.classList.remove("visualized")
+    }
+
+    addDragHandlers(ship) {
         ship.element.ondragstart = this.dragStartHandler.bind(this)
         ship.element.ondragend = this.dragEndHandler.bind(this)
         ship.element.onclick = this.clickHandler.bind(this)
-        this.getCell(ship.position.x, ship.position.y).element.appendChild(ship.element)
+    }
+
+    removeDragHandlers() {
+        for (let ship of this.ships) {
+            ship.element.ondragstart = null;
+            ship.element.ondragend = null;
+            ship.element.onclick = null;
+            ship.element.draggable = false;
+        }
     }
 
     createFieldElements() {

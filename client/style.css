@@ -29,10 +29,10 @@ th, td {
     z-index: 1;
 }
 
-.ship:hover {
+.ship[draggable=true]:hover {
     cursor: pointer;
 }
 
-.ship-blocked {
+#field.visualized .ship-blocked {
     background-color: rgb(255, 170, 170);
 }

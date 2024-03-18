@@ -41,8 +41,8 @@ export class Ship {
     }
 
     updateElementSize() {
-        this.element.style.width = Math.max(this.direction.x*this.length, 1)*31 + "px"
-        this.element.style.height = Math.max(this.direction.y*this.length, 1)*31 + "px"
+        this.element.style.width = Math.max(this.direction.x*this.length, 1)*31-1 + "px"
+        this.element.style.height = Math.max(this.direction.y*this.length, 1)*31-1 + "px"
     }
 }
 

@@ -30,6 +30,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	go Listen(&p, con)
 	defer con.Close()
 	defer close(p.GetChan())
+	defer match.RemovePlayer(&p)
 
 	match.AddToPool(&p)
 	for {

@@ -1,14 +1,9 @@
 import { Field, Ship } from "./field.js";
+import "./ws.js"
 
 const fieldElement = document.getElementById("field");
 
-createField({x: 10, y: 10}, {
-    "5": 1,
-    "4": 2,
-    "3": 3,
-    "2": 4
-})
-
+createField({x: 10, y: 10}, {"5": 1,"4": 2,"3": 3,"2": 4})
 function createField(size, settings) {
     const field = new Field(fieldElement, {x: 10, y: 10})
     let y = 0;

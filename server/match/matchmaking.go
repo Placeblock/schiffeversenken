@@ -49,6 +49,14 @@ func exists(id string) bool {
 	return exists
 }
 
+func RemovePlayer(p player.Player) {
+	for k, v := range pool {
+		if v == p {
+			delete(pool, k)
+		}
+	}
+}
+
 func AddToPool(p player.Player) {
 	id := generateID()
 	pool[id] = p
@@ -58,7 +66,7 @@ func AddToPool(p player.Player) {
 func Join(p player.Player, id string) {
 	opponent, exists := pool[id]
 	if !exists {
-		p.GetChan() <- player.OutMessage{Action: "ROOM", Data: "INVALID"}
+		p.GetChan() <- player.OutMessage{Action: "INVALID_ROOM", Data: nil}
 		return
 	}
 	createGame(id, p, opponent)

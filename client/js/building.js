@@ -1,6 +1,6 @@
 import { State, setState } from "./state.js"
 import { messageTarget, sendMessage } from "./ws.js"
-import { Field, Ship } from "./field.js"
+import { Field, Ship, newShip } from "./field.js"
 import { startPlaying } from "./playing.js";
 
 const fieldElement = document.getElementById("building-field");
@@ -39,7 +39,7 @@ function createField(element, size, ships) {
             const shipElement = document.createElement("div")
             shipElement.classList.add("ship")
             shipElement.id = "ship-"+n
-            const ship = new Ship(shipElement, {x: x, y: y}, {x: 1, y: 0}, length)
+            const ship = newShip({x, y}, {x: 1, y: 0}, length)
             field.addShip(ship)
             x+=length+1
             n++;

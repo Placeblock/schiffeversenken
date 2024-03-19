@@ -3,3 +3,17 @@
     flex-wrap: wrap;
     gap: 20px;
 }
+
+#turn-end-info {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 100%;
+    text-align: center;
+    display: none;
+}
+
+.field-container {
+    position: relative;
+}

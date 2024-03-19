@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"schiffeversenken/data"
 	"schiffeversenken/player"
 )
@@ -24,6 +25,7 @@ func NewGame(player1 player.Player, player2 player.Player, channel chan player.I
 	player2.CreateField()
 	game := Game{State: BUILDING, Player1: player1, Player2: player2, CurrentPlayer: player1, Channel: channel}
 	game.broadcast("STATE", "building")
+	game.nextPlayer()
 	return game
 }
 
@@ -95,6 +97,7 @@ type SunkResponse struct {
 }
 
 func (g *Game) Shoot(pl player.Player, cell data.Vector) {
+	fmt.Println(cell)
 	if g.State != PLAYING {
 		pl.GetChan() <- player.OutMessage{Action: "INVALID_STATE", Data: nil}
 		return
@@ -123,7 +126,8 @@ func (g *Game) Shoot(pl player.Player, cell data.Vector) {
 			}
 		}
 	} else {
-		pl.GetChan() <- player.OutMessage{Action: "NO_HIT", Data: cell}
+		pl.GetChan() <- player.OutMessage{Action: "NO_HIT_OTHER", Data: cell}
+		target.GetChan() <- player.OutMessage{Action: "NO_HIT_SELF", Data: cell}
 	}
 	g.nextPlayer()
 }

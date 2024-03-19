@@ -23,12 +23,22 @@
     border-bottom-left-radius:15px 255px;
 }
 
+.ship.sunk {
+    background-color: rgba(255, 83, 83, 0.541);
+}
+
 .ship[draggable=true]:hover {
     cursor: pointer;
 }
 
 .field.visualized .ship-blocked {
     background-color: rgb(255, 170, 170);
+}
+
+.field.shootable .cell:hover {
+    background-color: rgb(255, 83, 83);
+    cursor: pointer;
+    scale: 1.05
 }
 
 .cell {
@@ -41,6 +51,13 @@
     border-top-right-radius: 15px 225px;
     border-bottom-right-radius: 225px 15px;
     border-bottom-left-radius:15px 255px;
+
+    text-align: center;
+    font-size: 25px;
+}
+
+.cell.ship-cell {
+    background-color: rgb(255, 83, 83);
 }
 
 th, td {

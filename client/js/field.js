@@ -17,6 +17,10 @@ export class Ship {
         this.updateElementSize();
     }
 
+    sink() {
+        this.element.classList.add("sunk")
+    }
+
     getOccupiedCells(position=this.position, direction=this.direction) {
         const cells = []
         for (let l = 0; l < this.length; l++) {
@@ -46,6 +50,16 @@ export class Ship {
     }
 }
 
+let i = 0
+export function newShip(position, direction, length) {
+    const shipElement = document.createElement("div")
+    shipElement.classList.add("ship")
+    shipElement.id = "ship-"+i
+    const ship = new Ship(shipElement, position, direction, length)
+    i++
+    return ship
+}
+
 export class Field {
     constructor(element, size) {
         this.element = element;
@@ -53,16 +67,28 @@ export class Field {
         this.ships = [];
         this.size = size;
         this.createFieldElements()
-        this.updateShips()
+        this.updateShipBoxes()
     }
 
     addShip(ship, draggable=true) {
         this.ships.push(ship)
-        this.updateShips()
+        this.updateShipBoxes()
         if (draggable) {
             this.addDragHandlers(ship)
         }
         this.getCell(ship.position.x, ship.position.y).element.appendChild(ship.element)
+    }
+
+    hideShips() {
+        for (let ship of this.ships) {
+            ship.element.style.display = "none"
+        }
+    }
+
+    showShips() {
+        for (let ship of this.ships) {
+            ship.element.style.display = "block"
+        }
     }
 
     disableOccupied() {
@@ -121,13 +147,13 @@ export class Field {
         cell.element.innerText = "X"
     }
 
-    updateShips() {
+    updateShipBoxes() {
         for (let y = 0; y < this.cells.length; y++) {
             const row = this.cells[y]
             for (let x = 0; x < row.length; x++) {
                 const cell = this.getCell(x, y)
                 if (cell == undefined) continue
-                cell.ship = false
+                //cell.ship = false
                 cell.canPlaceShip = true
                 cell.element.classList.remove("ship-blocked")
             }
@@ -135,7 +161,7 @@ export class Field {
         for (let ship of this.ships) {
             const occupiedCells = ship.getOccupiedCells();
             for (let occupiedCell of occupiedCells) {
-                this.getCell(occupiedCell.x, occupiedCell.y).ship = true
+                //this.getCell(occupiedCell.x, occupiedCell.y).ship = true
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
                         const ox = occupiedCell.x+dx
@@ -145,6 +171,25 @@ export class Field {
                         cell.canPlaceShip = false
                         cell.element.classList.add("ship-blocked")
                     }
+                }
+            }
+        }
+    }
+
+    updateCells(showShot=true, showShip=true) {
+        for (let y = 0; y < this.cells.length; y++) {
+            for (let x = 0; x < this.cells[y].length; x++) {
+                const cell = this.getCell(x, y)
+                if (cell.shot && showShot && cell.element.querySelector("#shot-marker") == null) {
+                    const shotMarker = document.createElement("span")
+                    shotMarker.id = "shot-marker"
+                    shotMarker.innerText = "X"
+                    cell.element.appendChild(shotMarker)
+                }
+                if (cell.ship && showShip) {
+                    cell.element.classList.add("ship-cell")
+                } else {
+                    cell.element.classList.remove("ship-cell")
                 }
             }
         }
@@ -206,7 +251,7 @@ export class Field {
         if (!this.canMoveShip(ship, newPos)) return;
         ship.position = newPos
         targetCell.element.appendChild(src);
-        this.updateShips();
+        this.updateShipBoxes();
     }
 
     canMoveShip(ship, newPosition, newDirection) {
@@ -215,7 +260,7 @@ export class Field {
         }
         const cells = ship.getOccupiedCells(newPosition, newDirection);
         this.ships.splice(this.ships.indexOf(ship), 1)
-        this.updateShips()
+        this.updateShipBoxes()
         for (let occupiedCell of cells) {
             const cell = this.getCell(occupiedCell.x, occupiedCell.y);
             if (cell == undefined || !cell.canPlaceShip) {
@@ -233,7 +278,7 @@ export class Field {
         if (ship == undefined) return
         if (this.canMoveShip(ship, ship.position, ship.getOppositeDirection())) {
             ship.rotate()
-            this.updateShips()
+            this.updateShipBoxes()
         }   
     }
 }

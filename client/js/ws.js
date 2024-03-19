@@ -1,20 +1,21 @@
-import * as animation from "./connecting.js";
-import { setRoomID } from "./room.js";
-import { State, setState } from "./state.js";
+class MessageTarget extends EventTarget {
+    constructor() {
+        super()
+    }
+}
 
-animation.startAnimation()
-const socket = new WebSocket("ws://localhost:4195",);
+const messageTarget = new MessageTarget()
+export {messageTarget}
+
+const socket = new WebSocket("ws://localhost:4195");
 
 socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    switch (message.action) {
-        case "ROOM":  
-            animation.stopAnimation()
-            setState(State.Pool)
-            setRoomID(message.data)
-            break;
-        default:
-            break;
-    }
+    const e = new CustomEvent(message.action, {detail: message.data})
+    messageTarget.dispatchEvent(e)
     console.log(message);
 };
+
+export function sendMessage(action, data) {
+    socket.send(JSON.stringify({action, data}))
+}

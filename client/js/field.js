@@ -61,7 +61,6 @@ export class Field {
         this.updateShips()
         if (draggable) {
             this.addDragHandlers(ship)
-            ship.element.draggable = true;
         }
         this.getCell(ship.position.x, ship.position.y).element.appendChild(ship.element)
     }
@@ -74,6 +73,7 @@ export class Field {
         ship.element.ondragstart = this.dragStartHandler.bind(this)
         ship.element.ondragend = this.dragEndHandler.bind(this)
         ship.element.onclick = this.clickHandler.bind(this)
+        ship.element.draggable = true;
     }
 
     removeDragHandlers() {

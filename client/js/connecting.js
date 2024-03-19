@@ -1,3 +1,6 @@
+import { setRoomID } from "./room.js";
+import { State, setState } from "./state.js";
+import { messageTarget } from "./ws.js";
 
 const textElement = document.getElementById("loading-text")
 
@@ -14,20 +17,19 @@ const texts = [
 let animationInterval;
 let dotInterval;
 
-export function startAnimation() {
+function startAnimation() {
     changeText()
     animationInterval = setInterval(changeText, 5000);
     dotInterval = setInterval(changeDots, 300);
 }
 
-export function stopAnimation() {
+function stopAnimation() {
     clearInterval(animationInterval);
     clearInterval(dotInterval);
 }
 
 let i = 0;
 function changeText() {
-    console.log("TEST")
     textElement.innerText = texts[i]
     i = (i+1)%texts.length;
 }
@@ -37,3 +39,11 @@ function changeDots() {
     textElement.innerText = texts[i]+".".repeat(dots)
     dots = (dots+1)%4
 }
+
+messageTarget.addEventListener("ROOM", (data) => {
+    setRoomID(data.detail)
+    stopAnimation()
+    setState(State.Pool)
+})
+
+startAnimation()

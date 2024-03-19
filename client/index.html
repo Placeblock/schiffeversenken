@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/connecting.css">
     <link rel="stylesheet" href="css/pool.css">
+    <link rel="stylesheet" href="css/field.css">
+    <link rel="stylesheet" href="css/building.css">
+    <link rel="stylesheet" href="css/playing.css">
+</head>
 </head>
 <body>
     <section id="connecting">
@@ -22,13 +26,33 @@
             <h1>Code des Gegners:</h1>
             <form id="room-number-form">
                 <input name="id" id="room-number-input" type="number" placeholder="">
-                <button style="margin-top: 10px;">Spielen</button>
+                <button>Spielen</button>
             </form>
         </div>
     </section>
-    <section id="game" style="display: none;">
-        <table class="visualized" id="field"></table>
-        <table class="visualized" id="field-opponent" style="display: none;"></table>
+    <section id="building" style="display: none;">
+        <div id="field-container">
+            <h1>Dein Spielfeld</h1>
+            <p>Plaziere deine Schiffe!</p>
+            <table class="visualized field" id="building-field"></table>
+            <button id="submit-field" style="margin-top: 10px;">Bestätigen</button>
+            <p id="building-waiting" style="display: none">Auf Gegner warten...</p>
+        </div>
+        <div id="tutorial-container">
+            <h1>How to</h1>
+            <img id="rotate-ship-tutorial" src="assets/rotateship.png">
+            <img id="move-ship-tutorial" src="assets/moveship.png">
+        </div>
+    </section>
+    <section id="playing" style="display: none;">
+        <div class="field-container">
+            <h1>Dein Feld</h1>
+            <table class="field" id="field"></table>
+        </div>
+        <div class="field-container">
+            <h1>Gegnerisches Feld</h1>
+            <table class="field" id="field-opponent"></table>
+        </div>
     </section>
     <script src="js/app.js" type="module"></script>
 </body>

@@ -1,0 +1,48 @@
+.field {
+    gap: 0px;
+    border-spacing: 0px;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.ship {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    border: 3px solid black;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    border-bottom-right-radius: 225px 15px;
+    border-bottom-left-radius:15px 255px;
+}
+
+.ship[draggable=true]:hover {
+    cursor: pointer;
+}
+
+.field.visualized .ship-blocked {
+    background-color: rgb(255, 170, 170);
+}
+
+.cell {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    border-bottom-right-radius: 225px 15px;
+    border-bottom-left-radius:15px 255px;
+}
+
+th, td {
+    padding: 0px;
+}

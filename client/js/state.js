@@ -1,7 +1,8 @@
 export const State = {
     Connecting: "connecting",
     Pool: "pool",
-    Game: "game"
+    Building: "building",
+    Playing: "playing"
 }
 
 let state = State.Connecting;

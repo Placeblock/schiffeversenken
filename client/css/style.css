@@ -5,9 +5,8 @@
 
 body, html {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     margin: 0px;
-    position: fixed;
     font-family: handwritten;
     background:
       linear-gradient(rgba(252, 252, 252, 0.5), rgba(158, 158, 158, 0.219)),
@@ -18,8 +17,9 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    min-height: 100vh;
     width: 100%;
+    flex-direction: column;
 }
 
 input {
@@ -53,44 +53,4 @@ button, input {
 
 button:hover {
     cursor: pointer;
-}
-
-
-.cell {
-    position: relative;
-    width: 30px;
-    height: 30px;
-    border: 1px solid black;
-}
-
-th, td {
-    padding: 0px;
-}
-
-#field {
-    gap: 0px;
-    border-spacing: 0px;
-    user-drag: none;
-    -webkit-user-drag: none;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
-
-.ship {
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    border: 3px solid black;
-    background-color: rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
-.ship[draggable=true]:hover {
-    cursor: pointer;
-}
-
-#field.visualized .ship-blocked {
-    background-color: rgb(255, 170, 170);
 }

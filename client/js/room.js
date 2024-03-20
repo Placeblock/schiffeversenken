@@ -14,3 +14,10 @@ roomCodeForm.onsubmit = ev => {
     const id = formData.get("id")
     sendMessage("JOIN", id)
 }
+
+const shareBtn = document.getElementById("share-btn")
+shareBtn.onclick = () => {
+    const url = new URL(window.location);
+    url.searchParams.set("shared", true)
+    navigator.clipboard.writeText(url.toString());
+}

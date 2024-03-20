@@ -19,3 +19,13 @@
     align-items: center;
     gap: 10px;
 }
+
+#pool-code-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#share-btn {
+    width: 40px;
+}

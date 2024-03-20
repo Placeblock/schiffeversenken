@@ -1,4 +1,5 @@
-import { sendMessage } from "./ws.js";
+import { messageTarget, sendMessage } from "./ws.js";
+import { State, setState } from "./state.js"
 
 const roomCodeElement = document.getElementById("room-code")
 
@@ -9,6 +10,11 @@ export function setRoomID(id) {
     roomID = id
     roomCodeElement.innerText = id
 }
+
+messageTarget.addEventListener("ROOM", (data) => {
+    setRoomID(data.detail)
+    setState(State.Pool)
+})
 
 roomCodeForm.onsubmit = ev => {
     ev.preventDefault();

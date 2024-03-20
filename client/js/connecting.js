@@ -1,6 +1,4 @@
-import { setRoomID } from "./room.js";
-import { State, setState } from "./state.js";
-import { messageTarget } from "./ws.js";
+import { State, stateTarget } from "./state.js";
 
 const textElement = document.getElementById("loading-text")
 
@@ -40,10 +38,12 @@ function changeDots() {
     dots = (dots+1)%4
 }
 
-messageTarget.addEventListener("ROOM", (data) => {
-    setRoomID(data.detail)
-    stopAnimation()
-    setState(State.Pool)
+stateTarget.addEventListener("state", e => {
+    if (e.detail.state != State.Connecting) {
+        stopAnimation()
+    }
 })
 
-startAnimation()
+stateTarget.addEventListener(State.Connecting, () => {
+    startAnimation()
+})

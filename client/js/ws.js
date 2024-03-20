@@ -1,4 +1,4 @@
-import { State, setState } from "./state";
+import { State, setState } from "./state.js";
 
 class MessageTarget extends EventTarget {
     constructor() {
@@ -11,9 +11,11 @@ export { messageTarget }
 
 let socket
 function connect() {
+    console.log("Connecting...")
     socket = new WebSocket("wss://battleship.codelix.de/wss");
 
     socket.onopen = () => {
+        console.log("Opened")
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get("room")
         if (id != null && urlParams.get("shared") != null) {
@@ -28,12 +30,10 @@ function connect() {
         console.log(message);
     };
 
-    socket.onclose = function (e) {
+    socket.onclose = (e) => {
         setState(State.Connecting);
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-        setTimeout(function () {
-            connect();
-        }, 1000);
+        setTimeout(connect, 1000);
     };
 
 }

@@ -88,3 +88,21 @@ messageTarget.addEventListener("SUNK_OTHER", (e) => {
     const ship = newShip(position, direction, length)
     opponentField.addShip(ship)
 })
+
+const wonTitle = document.getElementById("won-title")
+const lostTitle = document.getElementById("lost-title")
+messageTarget.addEventListener("WON", (e) => {
+    wonTitle.style.display = "block"
+    lostTitle.style.display = "none"
+    setState(State.Ended)
+})
+messageTarget.addEventListener("LOST", (e) => {
+    wonTitle.style.display = "none"
+    lostTitle.style.display = "block"
+    setState(State.Ended)
+})
+
+const playAgainBtn = document.getElementById("play-again-btn")
+playAgainBtn.onclick = () => {
+    sendMessage("POOL", null)
+}

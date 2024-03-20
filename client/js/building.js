@@ -1,8 +1,10 @@
 import { State, setState } from "./state.js"
 import { messageTarget, sendMessage } from "./ws.js"
-import { Field, Ship, newShip } from "./field.js"
+import { Field, newShip } from "./field.js"
 import { startPlaying } from "./playing.js";
 
+const submitBtn = document.getElementById("submit-field")
+const waitingText = document.getElementById("building-waiting")
 const fieldElement = document.getElementById("building-field");
 
 let field;
@@ -19,6 +21,8 @@ messageTarget.addEventListener("STATE", (data) => {
     }
     if (data.detail == "playing") {
         startPlaying(fieldSize, field.ships)
+        submitBtn.style.display = "block"
+        waitingText.style.display = "none"
     }
 })
 
@@ -47,8 +51,6 @@ function createField(element, size, ships) {
     }
 }
 
-const submitBtn = document.getElementById("submit-field")
-const waitingText = document.getElementById("building-waiting")
 
 submitBtn.onclick = () => {
     for (let ship of field.ships) {

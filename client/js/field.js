@@ -63,6 +63,7 @@ export function newShip(position, direction, length) {
 export class Field {
     constructor(element, size) {
         this.element = element;
+        this.element.innerHTML = ""
         this.cells = [];
         this.ships = [];
         this.size = size;

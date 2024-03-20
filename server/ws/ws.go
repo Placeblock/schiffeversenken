@@ -47,6 +47,8 @@ func handle(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		switch message.Action {
+		case "POOL":
+			match.AddToPool(&p)
 		case "JOIN":
 			var id string
 			err = json.Unmarshal(*message.Data, &id)

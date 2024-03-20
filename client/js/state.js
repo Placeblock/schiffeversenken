@@ -2,7 +2,8 @@ export const State = {
     Connecting: "connecting",
     Pool: "pool",
     Building: "building",
-    Playing: "playing"
+    Playing: "playing",
+    Ended: "ended"
 }
 
 let state = State.Connecting;

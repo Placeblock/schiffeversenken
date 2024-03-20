@@ -44,9 +44,9 @@ func GetDefaultFieldSettings() FieldSettings {
 		Ships: make(map[uint8]uint8),
 	}
 	settings.Ships[5] = 1
-	//settings.Ships[4] = 2
-	//settings.Ships[3] = 3
-	//settings.Ships[2] = 4
+	settings.Ships[4] = 2
+	settings.Ships[3] = 3
+	settings.Ships[2] = 4
 	return settings
 }
 

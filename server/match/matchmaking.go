@@ -58,6 +58,7 @@ func RemovePlayer(p player.Player) {
 }
 
 func AddToPool(p player.Player) {
+	RemovePlayer(p)
 	id := generateID()
 	pool[id] = p
 	p.GetChan() <- player.OutMessage{Action: "ROOM", Data: id}

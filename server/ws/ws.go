@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"schiffeversenken/match"
 	"schiffeversenken/player"
+	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -25,8 +27,10 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
+	lock := sync.Mutex{}
+	keepAlive(con, time.Second*20, &lock)
 	p := NewWebsocketPlayer()
-	go Listen(&p, con)
+	go Listen(&p, con, &lock)
 	defer con.Close()
 	defer close(p.GetChan())
 	defer match.RemovePlayer(&p)
@@ -64,9 +68,35 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Listen(p *WebsocketPlayer, con *websocket.Conn) {
+func keepAlive(c *websocket.Conn, timeout time.Duration, lock *sync.Mutex) {
+	lastResponse := time.Now()
+	c.SetPongHandler(func(msg string) error {
+		lastResponse = time.Now()
+		return nil
+	})
+
+	go func() {
+		for {
+			lock.Lock()
+			err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+			lock.Unlock()
+			if err != nil {
+				return
+			}
+			time.Sleep(timeout / 2)
+			if time.Since(lastResponse) > timeout {
+				c.Close()
+				return
+			}
+		}
+	}()
+}
+
+func Listen(p *WebsocketPlayer, con *websocket.Conn, lock *sync.Mutex) {
 	for message := range p.Channel {
+		lock.Lock()
 		con.WriteJSON(message)
+		lock.Unlock()
 	}
 }
 

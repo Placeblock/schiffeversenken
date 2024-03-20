@@ -7,7 +7,7 @@ class MessageTarget extends EventTarget {
 const messageTarget = new MessageTarget()
 export {messageTarget}
 
-const socket = new WebSocket("ws://localhost:4195");
+const socket = new WebSocket("wss://battleship.codelix.de/wss");
 
 socket.onmessage = (event) => {
     const message = JSON.parse(event.data);

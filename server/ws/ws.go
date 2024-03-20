@@ -102,5 +102,5 @@ func Listen(p *WebsocketPlayer, con *websocket.Conn, lock *sync.Mutex) {
 
 func StartServer() {
 	http.HandleFunc("/", handle)
-	http.ListenAndServe("127.0.0.1:4195", nil)
+	http.ListenAndServe("localhost:9160", nil)
 }

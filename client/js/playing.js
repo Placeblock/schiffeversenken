@@ -103,7 +103,13 @@ messageTarget.addEventListener("LOST", (e) => {
     setState(State.Ended)
 })
 
+const opponentLeftInfo = document.getElementById("opponent-left-info")
 const playAgainBtn = document.getElementById("play-again-btn")
 playAgainBtn.onclick = () => {
     sendMessage("POOL", null)
+    opponentLeftInfo.style.display = "none"
 }
+
+messageTarget.addEventListener("OPPONENT_LEFT", () => {
+    opponentLeftInfo.style.display = "block"
+})

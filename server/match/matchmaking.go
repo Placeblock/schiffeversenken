@@ -27,6 +27,10 @@ func createGame(id string, player1 player.Player, player2 player.Player) {
 	gameChannels[&g] = channel
 }
 
+func getGame(player player.Player) *game.Game {
+	return games[player]
+}
+
 func GetGameChannel(p player.Player) chan player.InMessage {
 	game := games[p]
 	if game == nil {
@@ -54,6 +58,12 @@ func RemovePlayer(p player.Player) {
 		if v == p {
 			delete(pool, k)
 		}
+	}
+	game := getGame(p)
+	if game != nil {
+		game.RemovePlayer(p)
+		delete(games, game.Player1)
+		delete(games, game.Player2)
 	}
 }
 

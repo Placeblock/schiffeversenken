@@ -2,7 +2,6 @@ package ws
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"schiffeversenken/match"
@@ -36,13 +35,11 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, data, err := con.ReadMessage()
 		if err != nil {
-			log.Println("read:", err)
 			break
 		}
 		var message WebsocketMessage
 		err = json.Unmarshal(data, &message)
 		if err != nil {
-			fmt.Println(err)
 			p.Channel <- player.OutMessage{Action: "INVALID_MESSAGE"}
 			continue
 		}

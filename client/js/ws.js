@@ -18,7 +18,7 @@ function connect() {
         console.log("Opened")
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get("room")
-        if (id != null && urlParams.get("shared") != null) {
+        if (id != null) {
             sendMessage("JOIN", id)
         }
     }

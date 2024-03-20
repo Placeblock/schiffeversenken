@@ -126,8 +126,8 @@ func (g *Game) Shoot(pl player.Player, cell data.Vector) {
 	} else {
 		pl.GetChan() <- player.OutMessage{Action: "NO_HIT_OTHER", Data: cell}
 		target.GetChan() <- player.OutMessage{Action: "NO_HIT_SELF", Data: cell}
+		g.nextPlayer()
 	}
-	g.nextPlayer()
 }
 
 func (g *Game) Listen() {

@@ -64,6 +64,7 @@ func RemovePlayer(p player.Player) {
 		game.RemovePlayer(p)
 		delete(games, game.Player1)
 		delete(games, game.Player2)
+		delete(gameChannels, game)
 	}
 }
 

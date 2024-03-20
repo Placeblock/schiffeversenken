@@ -17,12 +17,12 @@ messageTarget.addEventListener("FIELD", (data) => {
 
 messageTarget.addEventListener("STATE", (data) => {
     if (data.detail == "building") {
+        submitBtn.style.display = "block"
+        waitingText.style.display = "none"
         setState(State.Building)
     }
     if (data.detail == "playing") {
         startPlaying(fieldSize, field.ships)
-        submitBtn.style.display = "block"
-        waitingText.style.display = "none"
     }
 })
 

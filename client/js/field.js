@@ -161,7 +161,6 @@ export class Field {
         }
         for (let ship of this.ships) {
             const occupiedCells = ship.getOccupiedCells();
-            console.log(occupiedCells);
             for (let occupiedCell of occupiedCells) {
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
@@ -170,7 +169,6 @@ export class Field {
                         const cell = this.getCell(ox, oy)
                         if (cell == undefined) continue
                         cell.canPlaceShip = false
-                        console.log({x: ox, y: oy});
                         if (occupiedCells.some(c => c.x == ox && c.y == oy)) continue
                         cell.element.classList.add("ship-blocked")
                     }
@@ -217,12 +215,16 @@ export class Field {
             ev.setCancelled(true)
             return
         }
+        console.log(ev);
+        console.log(ev.layerX);
+        console.log(ev.layerY);
         const dx = Math.floor(ev.layerX / 30);
         const dy = Math.floor(ev.layerY / 30);
-        ev.dataTransfer.setData("drag-delta-x", dx)
-        ev.dataTransfer.setData("drag-delta-y", dy)
+        console.log(dx);
+        console.log(dy);
+        const data = {id: ev.target.id, dx, dy}
         ev.dataTransfer.dropEffect = "move";
-        ev.dataTransfer.setData("text/plain", ev.target.id);
+        ev.dataTransfer.setData("text/plain", JSON.stringify(data));
         setTimeout(() => {
             ev.target.style.display = "none"
         }, 0)
@@ -241,16 +243,20 @@ export class Field {
 
     dropHandler(ev) {
         ev.preventDefault();
-        const data = ev.dataTransfer.getData("text/plain");
-        if (data == "") return
-        const src = document.getElementById(data);
+        console.log(ev)
+        const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
+        const src = document.getElementById(data.id);
         const ship = this.getShip(src);
         if (ship == undefined) return
 
-        const dx = parseInt(ev.dataTransfer.getData("drag-delta-x"))
-        const dy = parseInt(ev.dataTransfer.getData("drag-delta-y"))
+        const dx = data.dx
+        const dy = data.dy
+        console.log(dx);
+        console.log(dy);
         const x = parseInt(ev.target.getAttribute("cell-x"))
         const y = parseInt(ev.target.getAttribute("cell-y"))
+        console.log(x);
+        console.log(y);
         const targetX = x-dx;
         const targetY = y-dy;
         const targetCell = this.getCell(targetX, targetY);

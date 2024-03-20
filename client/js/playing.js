@@ -58,7 +58,7 @@ messageTarget.addEventListener("HIT_OTHER", (e) => {
     const cell = opponentField.getCell(x, y)
     cell.shot = true
     cell.ship = true
-    opponentField.updateCells(true, true)
+    opponentField.updateCells()
 })
 
 messageTarget.addEventListener("HIT_SELF", (e) => {
@@ -66,27 +66,28 @@ messageTarget.addEventListener("HIT_SELF", (e) => {
     const cell = field.getCell(x, y)
     cell.shot = true
     cell.ship = true
-    field.updateCells(true, false)
+    field.updateCells()
 })
 
 messageTarget.addEventListener("NO_HIT_OTHER", (e) => {
     const {x, y} = e.detail
     const cell = opponentField.getCell(x, y)
     cell.shot = true
-    opponentField.updateCells(true, true)
+    opponentField.updateCells()
 })
 
 messageTarget.addEventListener("NO_HIT_SELF", (e) => {
     const {x, y} = e.detail
     const cell = field.getCell(x, y)
     cell.shot = true
-    field.updateCells(true, false)
+    field.updateCells()
 })
 
 messageTarget.addEventListener("SUNK_OTHER", (e) => {
     const {position, direction, length} = e.detail
     const ship = newShip(position, direction, length)
     opponentField.addShip(ship)
+    opponentField.updateShipBoxes()
 })
 
 const wonTitle = document.getElementById("won-title")

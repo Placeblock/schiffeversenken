@@ -7,6 +7,7 @@
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    table-layout: fixed;
 }
 
 .ship {
@@ -45,6 +46,8 @@
     position: relative;
     width: 30px;
     height: 30px;
+    min-width: 30px;
+    min-height: 30px;
     border: 1px solid black;
 
     border-top-left-radius: 255px 15px;
@@ -57,7 +60,6 @@
 }
 
 .cell.ship-cell {
-    background-color: rgb(255, 83, 83);
 }
 
 th, td {

@@ -75,5 +75,5 @@ func Listen(p *WebsocketPlayer, con *websocket.Conn) {
 
 func StartServer() {
 	http.HandleFunc("/", handle)
-	http.ListenAndServe("localhost:4195", nil)
+	http.ListenAndServe("127.0.0.1:4195", nil)
 }

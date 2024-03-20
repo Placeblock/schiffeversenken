@@ -161,8 +161,8 @@ export class Field {
         }
         for (let ship of this.ships) {
             const occupiedCells = ship.getOccupiedCells();
+            console.log(occupiedCells);
             for (let occupiedCell of occupiedCells) {
-                //this.getCell(occupiedCell.x, occupiedCell.y).ship = true
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
                         const ox = occupiedCell.x+dx
@@ -170,6 +170,8 @@ export class Field {
                         const cell = this.getCell(ox, oy)
                         if (cell == undefined) continue
                         cell.canPlaceShip = false
+                        console.log({x: ox, y: oy});
+                        if (occupiedCells.some(c => c.x == ox && c.y == oy)) continue
                         cell.element.classList.add("ship-blocked")
                     }
                 }
@@ -177,20 +179,24 @@ export class Field {
         }
     }
 
-    updateCells(showShot=true, showShip=true) {
+    updateCells() {
         for (let y = 0; y < this.cells.length; y++) {
             for (let x = 0; x < this.cells[y].length; x++) {
                 const cell = this.getCell(x, y)
-                if (cell.shot && showShot && cell.element.querySelector("#shot-marker") == null) {
-                    const shotMarker = document.createElement("span")
-                    shotMarker.id = "shot-marker"
-                    shotMarker.innerText = "X"
-                    cell.element.appendChild(shotMarker)
-                }
-                if (cell.ship && showShip) {
-                    cell.element.classList.add("ship-cell")
-                } else {
-                    cell.element.classList.remove("ship-cell")
+                if (cell.shot) {
+                    let shotMarker = cell.element.querySelector("#shot-marker")
+                    if (shotMarker == null) {
+                        shotMarker = document.createElement("span")
+                        shotMarker.id = "shot-marker"
+                        cell.element.appendChild(shotMarker)
+                    }
+                    if (cell.ship) {
+                        shotMarker.innerText = "X"
+                        cell.element.classList.add("ship-cell")
+                    } else {
+                        shotMarker.innerText = "O"
+                        cell.element.classList.remove("ship-cell")
+                    }
                 }
             }
         }
